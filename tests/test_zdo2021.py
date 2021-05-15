@@ -9,6 +9,48 @@ import zdo2021.main
 # cd ZDO2021
 # python -m pytest
 
+def test_run_all():
+    """
+    Run varroa detection algorithm for all images from test dataset.
+    """
+
+    vdd = zdo2021.main.VarroaDetector()
+
+    # Nastavte si v operačním systém proměnnou prostředí 'VARROA_DATA_PATH' s cestou k datasetu.
+    # Pokud není nastavena, využívá se testovací dataset tests/test_dataset
+    dataset_path = os.getenv('VARROA_DATA_PATH_', default=Path(__file__).parent / 'test_dataset/')
+
+    # print(f'dataset_path = {dataset_path}')
+    files = glob.glob(f'{dataset_path}/images/*.jpg')
+
+    # create array of all images
+    images = []
+
+    # read all images
+    for filename in files:
+        # read image 
+        im = skimage.io.imread(filename)
+        # collect all loaded images
+        images.append(im)
+    
+    # create data for prediction
+    imgs = np.stack(images, axis=0)
+
+    # make prediction
+    prediction = vdd.predict(imgs)
+
+    # make assertion
+    for i in range(len(prediction)): 
+        assert prediction[i].shape[0] == imgs[i].shape[0]
+
+    # Toto se bude spouštět všude mimo GitHub
+    if not os.getenv('CI'):
+        import matplotlib.pyplot as plt
+        for pred in prediction:
+            plt.imshow(pred)
+            plt.show()
+
+
 def test_run_random():
     vdd = zdo2021.main.VarroaDetector()
 
