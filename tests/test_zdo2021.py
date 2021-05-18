@@ -37,18 +37,60 @@ def test_run_all():
     imgs = np.stack(images, axis=0)
 
     # make prediction
-    prediction = vdd.predict(imgs)
+    #prediction = vdd.predict(imgs)
 
     # make assertion
-    for i in range(len(prediction)): 
-        assert prediction[i].shape[0] == imgs[i].shape[0]
+    #for i in range(len(prediction)): 
+    #    assert prediction[i].shape[0] == imgs[i].shape[0]
 
     # Toto se bude spouštět všude mimo GitHub
     if not os.getenv('CI'):
         import matplotlib.pyplot as plt
-        for pred in prediction:
-            plt.imshow(pred)
-            plt.show()
+        import json
+        
+        with open(dataset_path.__str__() + "\\annotations\\instances_default.json") as json_file:
+            gt_ann = json.load(json_file)
+        
+        for filename in files:
+
+            name = os.path.basename(filename)
+
+            image_id = -1
+
+            for i in gt_ann["images"]:
+                if i["file_name"] == name:
+                    image_id = i["id"]
+                    break
+
+            if image_id == -1:
+                continue
+
+            #ravel = prediction[0].ravel()
+            #a, b, c = plt.hist(ravel, 40, density=False)
+
+            im = skimage.io.imread(filename)
+
+            plt.figure(filename)
+            plt.imshow(im, cmap='gray')
+            #plt.show()
+
+            for i in gt_ann["annotations"]:
+                if i["image_id"] == image_id:
+                    segmentation = i["segmentation"][0]
+                    xs = []
+                    ys = []
+                    index = 0
+                    for j in segmentation:
+                        if(index % 2 == 0):
+                            ys.append(j)
+                        else:
+                            xs.append(j)
+                        index = index + 1
+                    plt.plot(xs, ys, color="red", linewidth=0.5) 
+
+            output = "annot\\" + name
+
+            plt.savefig(output, dpi = 600)
 
 
 def test_run_random():
@@ -75,14 +117,48 @@ def test_run_random():
     # Toto se bude spouštět všude mimo GitHub
     if not os.getenv('CI'):
         import matplotlib.pyplot as plt
-        plt.imshow(prediction[0])
-        plt.show()
+        import json
+        
+        with open(dataset_path.__str__() + "\\annotations\\instances_default.json") as json_file:
+            gt_ann = json.load(json_file)
+        
+        name = os.path.basename(filename)
 
+        for i in gt_ann["images"]:
+            if i["file_name"] == name:
+                image_id = i["id"]
+                break
 
-    # import json
-    # gt_ann = json.loads(Path(dataset_path)/"annotations/instances_default.json")
-    # assert f1score(ground_true_masks, prediction) > 0.55
+        #ravel = prediction[0].ravel()
+        #a, b, c = plt.hist(ravel, 40, density=False)
 
+        plt.figure(filename)
+        plt.imshow(prediction[0], cmap='gray')
+        #plt.show()
+
+        for i in gt_ann["annotations"]:
+            if i["image_id"] == image_id:
+                segmentation = i["segmentation"][0]
+                xs = []
+                ys = []
+                index = 0
+                for j in segmentation:
+                    if(index % 2 == 0):
+                        ys.append(j)
+                    else:
+                        xs.append(j)
+                    index = index + 1
+                plt.plot(xs, ys, color="yellow", linewidth=0.1) 
+
+        output = "results\\" + name
+
+        plt.savefig(output, dpi = 600)
+
+        os.startfile(output)
+
+        #assert f1score(ground_true_masks, prediction) > 0.55
+        
+        
 
 def f1score(gt_ann, prediction):
     pass
