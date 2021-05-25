@@ -200,13 +200,13 @@ def prepare_ground_true_mask(gt_ann, filename):
     for ann_im in gt_ann['images']:
         if  ann_im["file_name"] == Path(filename).name:
             # mask = np.zeros([], dtype=bool)
-            M = np.zeros((ann_im["height"], ann_im["width"]), dtype=bool)
+            M = np.zeros((ann_im["width"], ann_im["height"]), dtype=bool)
             immage_id = ann_im["id"]
             for ann in gt_ann['annotations']:
                 if ann["image_id"] == immage_id:
                     S = ann['segmentation']
                     for s in S:
                         N = len(s)
-                        rr, cc = polygon(np.array(s[1:N:2]), np.array(s[0:N:2]))  # (y, x)
+                        rr, cc = polygon(np.array(s[0:N:2]), np.array(s[1:N:2]))  # (y, x)
                         M[rr, cc] = True
     return M
