@@ -1,3 +1,7 @@
 {
-  "threshold":  43
+  "threshold": 0.3,
+  "circ-min": 0.7,
+  "circ-max": 1.1,
+  "area-min": 200,
+  "area-max": 500
 }

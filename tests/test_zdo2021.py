@@ -4,7 +4,8 @@ import skimage.io
 import glob
 import numpy as np
 import sklearn.metrics
-
+import matplotlib.pyplot as plt
+import json
 from pathlib import Path
 from skimage.draw import polygon
 
@@ -12,90 +13,6 @@ import zdo2021.main
 
 # cd ZDO2021
 # python -m pytest
-
-#def test_run_all():
-#    """
-#    Run varroa detection algorithm for all images from test dataset.
-#    """
-#
-#    vdd = zdo2021.main.VarroaDetector()
-#
-#    # Nastavte si v operačním systém proměnnou prostředí 'VARROA_DATA_PATH' s cestou k datasetu.
-#    # Pokud není nastavena, využívá se testovací dataset tests/test_dataset
-#    dataset_path = os.getenv('VARROA_DATA_PATH_', default=Path(__file__).parent / 'test_dataset/')
-#
-#    # print(f'dataset_path = {dataset_path}')
-#    files = glob.glob(f'{dataset_path}/images/*.jpg')
-#
-#    # create array of all images
-#    images = []
-#
-#    # read all images
-#    for filename in files:
-#        # read image 
-#        im = skimage.io.imread(filename)
-#        # collect all loaded images
-#        images.append(im)
-#    
-#    # create data for prediction
-#    imgs = np.stack(images, axis=0)
-#
-#    # make prediction
-#    #prediction = vdd.predict(imgs)
-#
-#    # make assertion
-#    #for i in range(len(prediction)): 
-#    #    assert prediction[i].shape[0] == imgs[i].shape[0]
-#
-#    # Toto se bude spouštět všude mimo GitHub
-#    if not os.getenv('CI'):
-#        import matplotlib.pyplot as plt
-#        import json
-#        
-#        with open(dataset_path.__str__() + "\\annotations\\instances_default.json") as json_file:
-#            gt_ann = json.load(json_file)
-#        
-#        for filename in files:
-#
-#            name = os.path.basename(filename)
-#
-#            image_id = -1
-#
-#            for i in gt_ann["images"]:
-#                if i["file_name"] == name:
-#                    image_id = i["id"]
-#                    break
-#
-#            if image_id == -1:
-#                continue
-#
-#            #ravel = prediction[0].ravel()
-#            #a, b, c = plt.hist(ravel, 40, density=False)
-#
-#            im = skimage.io.imread(filename)
-#
-#            plt.figure(filename)
-#            plt.imshow(im, cmap='gray')
-#            #plt.show()
-#
-#            for i in gt_ann["annotations"]:
-#                if i["image_id"] == image_id:
-#                    segmentation = i["segmentation"][0]
-#                    xs = []
-#                    ys = []
-#                    index = 0
-#                    for j in segmentation:
-#                        if(index % 2 == 0):
-#                            ys.append(j)
-#                        else:
-#                            xs.append(j)
-#                        index = index + 1
-#                    plt.plot(xs, ys, color="red", linewidth=0.5) 
-#
-#            output = "annot\\" + name
-#
-#            plt.savefig(output, dpi = 600)
-
 
 def test_run_random():
     vdd = zdo2021.main.VarroaDetector()
@@ -110,6 +27,7 @@ def test_run_random():
     filename = files[cislo_obrazku]
 
     im = skimage.io.imread(filename)
+    
     imgs = np.expand_dims(im, axis=0)
     # print(f"imgs.shape={imgs.shape}")
     prediction = vdd.predict(imgs)
@@ -118,8 +36,6 @@ def test_run_random():
 
     # Toto se bude spouštět všude mimo GitHub
     if not os.getenv('CI'):
-        import matplotlib.pyplot as plt
-        import json
         
         ann_pth = Path(dataset_path)/"annotations/instances_default.json"
         assert ann_pth.exists()
@@ -129,7 +45,7 @@ def test_run_random():
 
         ground_true_mask = prepare_ground_true_mask(gt_ann, filename)
         
-        plt.imshow(im)
+        plt.imshow(prediction[0], cmap='gray')
         plt.contour(ground_true_mask)
         plt.show()
 
@@ -157,7 +73,6 @@ def test_run_all():
         # print(f"imgs.shape={imgs.shape}")
         prediction = vdd.predict(imgs)
 
-        import json
         ann_pth = Path(dataset_path)/"annotations/instances_default.json"
         assert ann_pth.exists()
         # gt_ann = json.loads(str(ann_pth))
@@ -166,21 +81,17 @@ def test_run_all():
 
         ground_true_mask = prepare_ground_true_mask(gt_ann, filename)
         
-        plt.imshow(im)
-        plt.contour(ground_true_mask)
-        plt.show()
+        # plt.imshow(prediction[0])
+        # plt.contour(ground_true_mask)
+        # plt.show()
 
-        # if True:
-        #     from matplotlib import pyplot as plt
-        #     plt.imshow(im)
-        #     plt.contour(ground_true_mask)
-        #     plt.show()
         f1i = f1score(ground_true_mask, prediction)
         # assert f1i > 0.55
         f1s.append(f1i)
 
     f1 = np.mean(f1s)
     print(f"f1score={f1}")
+    print(f1s)
     # assert f1 > 0.55
 
 

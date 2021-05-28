@@ -1,0 +1,21 @@
+otsu f1score=0.014254490100670541   circularity < 0.7 or circularity > 1.1 or prop.area < 100
+0.15 f1score=0.05122556072747609    circularity < 0.7 or circularity > 1.1 or prop.area < 100
+0.25 f1score=0.1154598724466272     circularity < 0.7 or circularity > 1.1 or prop.area < 100
+0.30 f1score=0.13957534211405365    circularity < 0.7 or circularity > 1.1 or prop.area < 100
+0.40 f1score=0.08408382334014047    circularity < 0.7 or circularity > 1.1 or prop.area < 100
+
+0.30 f1score=0.16926703516257702    circularity < 0.7 or circularity > 1.1 or prop.area < 250
+0.30 f1score=0.014799849542217296   circularity < 0.7 or circularity > 1.1 or prop.area < 500
+0.30 f1score=0.13524856116358921    circularity < 0.7 or circularity > 1.1 or prop.area < 300
+0.30 f1score=0.19111956271482033    circularity < 0.7 or circularity > 1.1 or prop.area < 200
+0.30 f1score=0.19111956271482033    circularity < 0.7 or circularity > 1.3 or prop.area < 200
+0.30 f1score=0.19111956271482033    circularity < 0.7 or circularity > 1.0 or prop.area < 200
+0.30 f1score=0.16532819348756148    circularity < 0.7 or circularity > 1.0 or prop.area < 200 or prop.euler_number != 1 
+0.30 f1score=0.158444833653573      circularity < 0.8 or circularity > 1.0 or prop.area < 200
+0.30 f1score=0.16450774113257693    circularity < 0.8 or circularity > 0.9 or prop.area < 200
+0.30 f1score=0.22590517718645187    circularity < 0.7 or circularity > 1.1 or prop.area < 200 or prop.area > 1000
+0.30 f1score=0.23921183692494302    circularity < 0.7 or circularity > 1.1 or prop.area < 200 or prop.area > 750
+0.30 f1score=0.2170533496599602     circularity < 0.7 or circularity > 1.1 or prop.area < 200 or prop.area > 400
+
+0.30 f1score=0.24106616331921293    circularity < 0.7 or circularity > 1.1 or prop.area < 200 or prop.area > 500
+0.30 f1score=0.21014653635385602    circularity < 0.7 or circularity > 1.1 or prop.area < 200 or prop.area > 500 or prop.euler_number != 1 

@@ -32,9 +32,9 @@ class VarroaDetector():
         data_channels = data.shape[3]
         
         # print information
-        print("{}: {}".format("Images count", data_count))
-        print("{}: {}x{}".format("Dimension", data_width, data_height))
-        print("{}: {}".format("Color channels", data_channels))
+        # print("{}: {}".format("Images count", data_count))
+        # print("{}: {}x{}".format("Dimension", data_width, data_height))
+        # print("{}: {}".format("Color channels", data_channels))
         
         # create output based on input data
         output = []
@@ -42,14 +42,17 @@ class VarroaDetector():
         # proceed varroa detection in each image
         for i in range(data_count):
          
+            # flip image horizontaly because annotations are mirrored
+            img_mirror = np.fliplr(data[i])
+
             # convert to grayscale
-            img_gray = skimage.color.rgb2gray(data[i])
+            img_gray = skimage.color.rgb2gray(img_mirror)
         
-            img_blur = ndimage.gaussian_filter(img_gray, sigma=1)
+            img_blur = ndimage.gaussian_filter(img_gray, sigma=0)
 
             # threshold based on config value
-            thresh = threshold_otsu(img_blur)
-            #thresh = 0.25
+            #thresh = threshold_otsu(img_blur)
+            thresh = self.config["threshold"]
             img_threshold = img_blur < thresh
         
             # get label image
@@ -59,22 +62,27 @@ class VarroaDetector():
             img_region_props = skimage.measure.regionprops(img_label)
         
             labels_to_remove = []
-
+            
+            # iterate over all regions 
             for prop in img_region_props:
                 
+                # estimate circularity
                 circularity = (4 * math.pi * prop.area) / (prop.perimeter**2)
                 
+                # mark region to remove
                 if (
-                    #prop.euler_number != 1 
-                    circularity < 0.7 
-                    or circularity > 1.1 
-                    or prop.area < 100  # TODO !!! 
-                    #or prop.area > 1000
+                    # prop.euler_number != 1 
+                    circularity < self.config["circ-min"] 
+                    or circularity > self.config["circ-max"] 
+                    or prop.area < self.config["area-min"]
+                    or prop.area > self.config["area-max"]
                 ):
                     labels_to_remove.append(prop.label)
 
+            # remove all marked region
             img_label[np.isin(img_label, labels_to_remove)] = 0
 
+            # create final mask
             final_mask =  img_threshold < img_label
 
             # write image to output
