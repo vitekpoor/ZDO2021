@@ -43,7 +43,8 @@ class VarroaDetector():
         for i in range(data_count):
          
             # flip image horizontaly because annotations are mirrored
-            img_mirror = np.fliplr(data[i])
+            #img_mirror = np.fliplr(data[i])
+            img_mirror = data[i]
 
             # convert to grayscale
             img_gray = skimage.color.rgb2gray(img_mirror)
